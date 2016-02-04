@@ -4,15 +4,15 @@ Created on Jan 19, 2016
 @author: tim
 '''
 from tim.metadataExtractor.ImportFilterInterface import ImportFilterInterface
-import exifread
+from email.parser import Parser, BytesParser
 
 
-class ImportFilterJpeg(ImportFilterInterface):
+class ImportFilterEmail(ImportFilterInterface):
 	'''
 	classdocs
 	'''
-	myName = 'jpeg'
-	myContentType = 'image/jpeg'
+	myName = 'Email'
+	myContentType = 'text/plain'
 	
 	myValidTagNames = ['Image DateTime']
 
@@ -21,11 +21,8 @@ class ImportFilterJpeg(ImportFilterInterface):
 		Constructor
 		'''
 	
-	def extractMetaData(self, obj):
-		tags = exifread.process_file(obj, details=False)
-		#print(tags)
-		return self.convertMetaDataToSwiftFormat(tags)	
-	
-	
-	
+	def extractMetaData(self,obj):
+		headers = BytesParser().parse(obj)
+		h = dict(headers.items())
+		return self.convertMetaDataToSwiftFormat(h)
 	

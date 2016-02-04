@@ -4,11 +4,11 @@ Created on Jan 19, 2016
 @author: tim
 '''
 import logging
-from tim.metadataExtractor.ImportFilter import ImportFilterJpeg
+from tim.metadataExtractor.ImportFilter import ImportFilterEmail
 from tim.swift.SwiftBackend import SwiftBackend
 import swiftclient.multithreading
 import concurrent.futures
-from tim.metadataExtractor.ContentTypeIdentifier import ContentTypeIdentifier
+#from tim.metadataExtractor.ContentTypeIdentifier import ContentTypeIdentifier
 
 
 class Extractor(object):
@@ -16,7 +16,7 @@ class Extractor(object):
 	classdocs
 	'''
 	mapping = dict()
-	mapping[ImportFilterJpeg.myContentType] = ImportFilterJpeg
+	mapping[ImportFilterEmail.myContentType] = ImportFilterEmail
 
 	def __init__(self, containerName):
 		'''
@@ -65,15 +65,20 @@ class Extractor(object):
 				self.log.info('running {} for type : {} on obj: {}'.format(functionOnObject.__name__, thisObjType, thisObjName))
 				future_results.append(executor.submit(functionOnObject, thisObjType, thisObjName))
 			
+			success = 0
+			failure = 0
 			# try to get the individual results from the filters
 			for future in concurrent.futures.as_completed(future_results):
 				try:
 					data = future.result()
 				except Exception as exc:
 					self.log.error('worker failed with exception: {}'.format(exc))
+					failure += 1
 				else:
 					self.log.info('worker succeeded on obj: {}'.format(data))
+					success += 1
 				
+			self.log.info('{} workers were successful and {} workers has been failed!'.format(success,failure))
 	
 	
 	def runFilterForWholeContainer(self):

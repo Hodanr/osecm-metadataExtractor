@@ -77,8 +77,10 @@ class Extractor(object):
 				else:
 					self.log.info('worker succeeded on obj: {}'.format(data))
 					success += 1
-				
-			self.log.info('{} workers were successful and {} workers has been failed!'.format(success,failure))
+			
+			successPerc = success/(success+failure)	
+			failurePerc = failure/(success+failure)
+			self.log.info('{} workers were successful ({} success rate!) and {} workers has been failed({} failure rate!!!)'.format(success,successPerc,failure,failurePerc))
 	
 	
 	def runFilterForWholeContainer(self):
